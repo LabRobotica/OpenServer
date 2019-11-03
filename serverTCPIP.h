@@ -117,11 +117,10 @@ int TCPIP_mirror_mode() //Test mode
 
     cout << string(buf, 0, bytesReceived) << endl;
 
-    // Echo message back to client
+    #ifdef debug
+        cerr << "Echo message back to client" << endl;
+    #endif
     send(clientSocket, buf, bytesReceived + 1, 0);
-        
-    // Close the socket
-    close(clientSocket);
- 
+    
     return 0;
 }
