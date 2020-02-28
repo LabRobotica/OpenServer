@@ -1,19 +1,32 @@
 #define debug
-
 #include "serverTCPIP.h"
 //#include "CRCOpen.h"
 
-int  main (void) //(int argc, char **argv)
+void OPENSERVER_presentation();
+
+int  main (int argc, char **argv)
 {
-  TCPIP_listen_mode();
+  OPENSERVER_presentation();
+
+  TCPIP_open_connect();
+
   while (true)
   {
-    if(TCPIP_mirror_mode()) break;
+    TCPIP_listen_mode();
+    if(TCPIP_choose_mode()) break;
+    TCPIP_close_mode();
+    dprint("New Cycle"<<endl);
   }
-  TCPIP_close_mode();  
+  close(listening);
 
-  //startCRCOpen();
-  //stopCRCOpen();
   return 0;
 }
- 
+
+void OPENSERVER_presentation()
+{
+  cout << "------------------------------------" << endl;
+  cout << "|         -> OpenServer <-         |" << endl;
+  cout << "|       Comau C5G-Open eORL        |" << endl;
+  cout << "|   CEFET-MG Unidade Divinópolis   |" << endl;
+  cout << "------------------------------------" << endl << endl;
+}

@@ -7,30 +7,32 @@
 #include <string.h>
 #include <string>
 
+#ifdef debug
+    #define dprint(x) cerr<<x<<endl
+#else
+    #define dprint(x)
+#endif
+
 using namespace std;
+
 int clientSocket;
+int listening;
 
-int TCPIP_listen_mode()
+int TCPIP_open_connect() 
 {
-    #ifdef debug
-        cerr << "----------------------------" << endl;
-        cerr << "|    TCPIP_listen_mode()   |" << endl;
-        cerr << "----------------------------" << endl << endl;
+    dprint("----------------------------");
+    dprint("|    TCPIP_open_connect()  |");
+    dprint("----------------------------") << endl;
+    dprint("[TCPIP]  Create a socket");
 
-        cerr << "[TCPIP]  Create a socket" << endl;
-    #endif
-    int listening = socket(AF_INET, SOCK_STREAM, 0);
+    listening = socket(AF_INET, SOCK_STREAM, 0);
     if (listening == -1)
     {
-        #ifdef debug
-            cerr << "[TCPIP]  Can't create a socket! Quitting" << endl;
-        #endif
+        dprint("[TCPIP]  Can't create a socket! Quitting");
         return -1;
     }
-    
-    #ifdef debug
-        cerr << "[TCPIP]  Bind the ip address and port to a socket" << endl;
-    #endif
+
+    dprint("[TCPIP]  Bind the ip address and port to a socket");
 
     sockaddr_in hint;
     hint.sin_family = AF_INET;
@@ -39,14 +41,21 @@ int TCPIP_listen_mode()
  
     bind(listening, (sockaddr*)&hint, sizeof(hint));
  
-    #ifdef debug
-        cerr << "[TCPIP]  Tell Winsock the socket is for listening" << endl;
-    #endif
+    dprint("[TCPIP]  Tell Winsock the socket is for listening") << endl;
+
     listen(listening, SOMAXCONN);
- 
-    #ifdef debug
-        cerr << "[TCPIP]  Wait for a connection" << endl;
-    #endif
+    
+    return 0;
+}
+
+int TCPIP_listen_mode()
+{
+    dprint("----------------------------");
+    dprint("|    TCPIP_listen_mode()   |");
+    dprint("----------------------------") << endl;
+
+    dprint("[TCPIP]  Wait for a connection");
+
     sockaddr_in client;
     socklen_t clientSize = sizeof(client);
  
@@ -57,35 +66,31 @@ int TCPIP_listen_mode()
  
     memset(host, 0, NI_MAXHOST); // same as memset(host, 0, NI_MAXHOST);
     memset(service, 0, NI_MAXSERV);
- 
+
+    
     if (getnameinfo((sockaddr*)&client, sizeof(client), host, NI_MAXHOST, service, NI_MAXSERV, 0) == 0)
     {
-        #ifdef debug
-            cout << host << "[TCPIP]  connected on port " << service << endl;
-        #endif
+        dprint("[TCPIP]  Connected on IP: " << host);
+        dprint("[TCPIP]  Connected on port: " << service) << endl;;
     }
     else
     {
         inet_ntop(AF_INET, &client.sin_addr, host, NI_MAXHOST);
-        #ifdef debug
-            cout << host << "[TCPIP]  connected on port " << ntohs(client.sin_port) << endl;
-        #endif
+        dprint("[TCPIP]  Connected on IP: " << host);
+        dprint("[TCPIP]  Connected on port: " << ntohs(client.sin_port))  << endl;;
     }
     
-    #ifdef debug
-        cerr << "[TCPIP]  Close listening socket" << endl;
-    #endif
-    close(listening);
+    
     return 0;
 }
 
 int TCPIP_close_mode()
 {
-    cerr << "----------------------------" << endl;
-    cerr << "|    TCPIP_close_mode()    |" << endl;
-    cerr << "----------------------------" << endl << endl;
-    // Close the socket
-    close(clientSocket);
+    dprint("----------------------------");
+    dprint("|    TCPIP_close_mode()    |");
+    dprint("----------------------------") << endl;
+    
+    close(clientSocket);// Close the socket
  
     return 0;
 }
@@ -94,33 +99,75 @@ int TCPIP_mirror_mode() //Test mode
 {
     char buf[4096];
     memset(buf, 0, 4096);
+    dprint("Wait for client to send data");
 
-    #ifdef debug
-        cerr << "Wait for client to send data" << endl;
-    #endif
     int bytesReceived = recv(clientSocket, buf, 4096, 0);
     if (bytesReceived == -1)
-    {
-        #ifdef debug
-            cerr << "Error in recv(). \n Quitting..." << endl;
-        #endif
+    {    
+        dprint("Error in recv(). \n Quitting...");
         return 1;
     }
-
     if (bytesReceived == 0)
     {
-        #ifdef debug
-            cout << "Client disconnected..." << endl;
-        #endif
+        dprint("Client disconnected...");
         return 2;
     }
 
-    cout << string(buf, 0, bytesReceived) << endl;
-
-    #ifdef debug
-        cerr << "Echo message back to client" << endl;
-    #endif
+    dprint(string(buf, 0, bytesReceived));
+    dprint("Echo message back to client");
     send(clientSocket, buf, bytesReceived + 1, 0);
+    
+    return 0;
+}
+
+int TCPIP_choose_mode() //Test mode
+{
+    char buf[4096];
+
+    dprint("----------------------------");
+    dprint("|    TCPIP_choose_mode()   |");
+    dprint("----------------------------") << endl;
+
+    while (true)
+    {
+        memset(buf, 0, 4096);
+
+        dprint("Wait for client to send data");
+
+        int bytesReceived = recv(clientSocket, buf, 4096, 0);
+        if (bytesReceived == -1)
+        {
+            dprint("Error in recv(). \n Quitting...");
+            return 1;
+        }
+
+        if (bytesReceived == 0)
+        {
+            dprint("Client disconnected...");
+            return 2;
+        }
+
+        dprint("CLIENT> " << string(buf, 0, bytesReceived));
+        
+        switch (buf[0])
+        {
+            case 't': //teste mode
+                send(clientSocket, "j 05000 05000 05000 05000 05000 05000", 38 + 1, 0);
+                break;
+            
+            case 'm': //mirror mode
+                send(clientSocket, buf, bytesReceived + 1, 0);
+                break;
+
+            //case 'l': //Listen mode
+                //send(clientSocket, NULL, bytesReceived + 1, 0);
+                //break;
+
+            default: //error mode
+                send(clientSocket, buf, bytesReceived + 1, 0);
+                break;
+        }
+    }
     
     return 0;
 }

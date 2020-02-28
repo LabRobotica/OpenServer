@@ -5,7 +5,33 @@
 #include <stdio.h>
 #include "/opt/inc/eORL.h"
 
-int loop (){}
+// struct joins
+// {
+//   double j1 = 0;
+//   double j2 = 0;
+//   double j3 = 0;
+//   double j4 = 0;
+//   double j5 = 0;
+//   double j6 = 0;
+// } joins[2];
+
+
+int loop ()
+{
+    joins[1].j1 = 0;
+    joins[1].j2 = 0;
+    joins[1].j3 = 0;
+    joins[1].j4 = 0;
+    joins[1].j5 = 0;
+    joins[1].j6 = 0;
+
+    joins[0].j1 = 5;
+    joins[0].j2 = 5;
+    joins[0].j3 = 5;
+    joins[0].j4 = 5;
+    joins[0].j5 = 5;
+    joins[0].j6 = 5;
+}
 
 int  startCRCOpen (void)
 { 
