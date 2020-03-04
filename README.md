@@ -13,7 +13,7 @@ Now go to the folder and create a folder for the build files:
 
     cd OpenServer && mkdir build && cd build
 
-Now whenever you need to complete and execute run the command below:
+Now whenever you need to compile and execute, just run the command below:
 
     cmake .. && make && clear && sudo ./OpenServer
 
