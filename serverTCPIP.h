@@ -1,3 +1,6 @@
+#ifndef SERVERTCPIP_H
+#define SERVERTCPIP_H
+
 #include <iostream>
 #include <sys/types.h>
 #include <unistd.h>
@@ -6,6 +9,8 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <string>
+#include <cstring>
+#include "CRCOpen.h"
 
 #ifdef debug
     #define dprint(x) cerr<<x<<endl
@@ -22,7 +27,7 @@ int TCPIP_open_connect()
 {
     dprint("----------------------------");
     dprint("|    TCPIP_open_connect()  |");
-    dprint("----------------------------") << endl;
+    dprint("----------------------------");
     dprint("[TCPIP]  Create a socket");
 
     listening = socket(AF_INET, SOCK_STREAM, 0);
@@ -41,7 +46,7 @@ int TCPIP_open_connect()
  
     bind(listening, (sockaddr*)&hint, sizeof(hint));
  
-    dprint("[TCPIP]  Tell Winsock the socket is for listening") << endl;
+    dprint("[TCPIP]  Tell Winsock the socket is for listening");
 
     listen(listening, SOMAXCONN);
     
@@ -52,7 +57,7 @@ int TCPIP_listen_mode()
 {
     dprint("----------------------------");
     dprint("|    TCPIP_listen_mode()   |");
-    dprint("----------------------------") << endl;
+    dprint("----------------------------");
 
     dprint("[TCPIP]  Wait for a connection");
 
@@ -71,13 +76,13 @@ int TCPIP_listen_mode()
     if (getnameinfo((sockaddr*)&client, sizeof(client), host, NI_MAXHOST, service, NI_MAXSERV, 0) == 0)
     {
         dprint("[TCPIP]  Connected on IP: " << host);
-        dprint("[TCPIP]  Connected on port: " << service) << endl;;
+        dprint("[TCPIP]  Connected on port: " << service);
     }
     else
     {
         inet_ntop(AF_INET, &client.sin_addr, host, NI_MAXHOST);
         dprint("[TCPIP]  Connected on IP: " << host);
-        dprint("[TCPIP]  Connected on port: " << ntohs(client.sin_port))  << endl;;
+        dprint("[TCPIP]  Connected on port: " << ntohs(client.sin_port));
     }
     
     
@@ -88,7 +93,7 @@ int TCPIP_close_mode()
 {
     dprint("----------------------------");
     dprint("|    TCPIP_close_mode()    |");
-    dprint("----------------------------") << endl;
+    dprint("----------------------------");
     
     close(clientSocket);// Close the socket
  
@@ -126,7 +131,8 @@ int TCPIP_choose_mode() //Test mode
 
     dprint("----------------------------");
     dprint("|    TCPIP_choose_mode()   |");
-    dprint("----------------------------") << endl;
+    dprint("----------------------------");
+    dprint("");
 
     while (true)
     {
@@ -152,16 +158,37 @@ int TCPIP_choose_mode() //Test mode
         switch (buf[0])
         {
             case 't': //teste mode
-                send(clientSocket, "j 05000 05000 05000 05000 05000 05000", 38 + 1, 0);
+                send(clientSocket, "j 5000 5000 5000 5000 5000 5000", 38 + 1, 0);
                 break;
             
             case 'm': //mirror mode
                 send(clientSocket, buf, bytesReceived + 1, 0);
                 break;
 
-            //case 'l': //Listen mode
-                //send(clientSocket, NULL, bytesReceived + 1, 0);
-                //break;
+            case 'l': //Listen mode
+            {
+                auto a1 = angle;
+                std::string buffer;
+                buffer  = std::to_string( (int) (a1->value[0]*1000));
+                buffer += " ";
+                buffer += std::to_string( (int) (a1->value[1]*1000));
+                buffer += " ";
+                buffer += std::to_string( (int) (a1->value[2]*1000));
+                buffer += " ";
+                buffer += std::to_string( (int) (a1->value[3]*1000));
+                buffer += " ";
+                buffer += std::to_string( (int) (a1->value[4]*1000));
+                buffer += " ";
+                buffer += std::to_string( (int) (a1->value[5]*1000));
+
+                for(int i=0; i<buffer.size(); i++)  buf[i] = buffer[i];
+                
+                send(clientSocket, buf, strlen(buf) + 1, 0);
+                break;
+            }
+
+            case 'c': //Close conection
+                return 1;
 
             default: //error mode
                 send(clientSocket, buf, bytesReceived + 1, 0);
@@ -171,3 +198,5 @@ int TCPIP_choose_mode() //Test mode
     
     return 0;
 }
+
+#endif
