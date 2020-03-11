@@ -1,5 +1,5 @@
-#ifndef CRC_OPEN_H
-#define CRC_OPEN_H
+#ifndef CRCOPEN_H
+#define CRCOPEN_H
 
 #define STRING_IP_CNTRL        "192.168.29.2"
 #define STRING_SYS_ID          "CNTRLC5G_2213436"

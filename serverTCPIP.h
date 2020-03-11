@@ -12,11 +12,7 @@
 #include <cstring>
 #include "CRCOpen.h"
 
-#ifdef debug
-    #define dprint(x) cerr<<x<<endl
-#else
-    #define dprint(x)
-#endif
+
 
 using namespace std;
 
@@ -158,7 +154,7 @@ int TCPIP_choose_mode() //Test mode
         switch (buf[0])
         {
             case 't': //teste mode
-                send(clientSocket, "j 5000 5000 5000 5000 5000 5000", 38 + 1, 0);
+                send(clientSocket, "j 5000 5000 5000 5000 5000 5000", 31, 0);
                 break;
             
             case 'm': //mirror mode
@@ -182,6 +178,15 @@ int TCPIP_choose_mode() //Test mode
                 buffer += std::to_string( (int) (a1->value[5]*1000));
 
                 for(int i=0; i<buffer.size(); i++)  buf[i] = buffer[i];
+                
+                send(clientSocket, buf, strlen(buf) + 1, 0);
+                break;
+            }
+            case 'g': //Listen mode
+            {
+                memset(buf, 0, 4096);
+                auto a1 = angle;
+                memset(buf, a1, a1.size());
                 
                 send(clientSocket, buf, strlen(buf) + 1, 0);
                 break;
