@@ -24,8 +24,8 @@ int TCPIP_open_connect()
     dprint("----------------------------");
     dprint("|    TCPIP_open_connect()  |");
     dprint("----------------------------");
-    dprint("[TCPIP]  Create a socket");
 
+    dprint("[TCPIP]  Create a socket");
     listening = socket(AF_INET, SOCK_STREAM, 0);
     if (listening == -1)
     {
@@ -34,7 +34,6 @@ int TCPIP_open_connect()
     }
 
     dprint("[TCPIP]  Bind the ip address and port to a socket");
-
     sockaddr_in hint;
     hint.sin_family = AF_INET;
     hint.sin_port = htons(54000);
@@ -65,7 +64,7 @@ int TCPIP_listen_mode()
     char host[NI_MAXHOST];      // Client's remote name
     char service[NI_MAXSERV];   // Service (i.e. port) the client is connect on
  
-    memset(host, 0, NI_MAXHOST); // same as memset(host, 0, NI_MAXHOST);
+    memset(host, 0, NI_MAXHOST);
     memset(service, 0, NI_MAXSERV);
 
     
@@ -96,30 +95,10 @@ int TCPIP_close_mode()
     return 0;
 }
 
-int TCPIP_mirror_mode() //Test mode
-{
-    char buf[4096];
-    memset(buf, 0, 4096);
-    dprint("Wait for client to send data");
 
-    int bytesReceived = recv(clientSocket, buf, 4096, 0);
-    if (bytesReceived == -1)
-    {    
-        dprint("Error in recv(). \n Quitting...");
-        return 1;
-    }
-    if (bytesReceived == 0)
-    {
-        dprint("Client disconnected...");
-        return 2;
-    }
 
-    dprint(string(buf, 0, bytesReceived));
-    dprint("Echo message back to client");
-    send(clientSocket, buf, bytesReceived + 1, 0);
-    
-    return 0;
-}
+
+
 
 int TCPIP_choose_mode() //Test mode
 {
@@ -193,7 +172,7 @@ int TCPIP_choose_mode() //Test mode
             }
 
             case 'c': //Close conection
-                return 1;
+                return 0;
 
             default: //error mode
                 send(clientSocket, buf, bytesReceived + 1, 0);

@@ -28,27 +28,28 @@ int loop (int a)
 
 int  startCRCOpen (void)
 { 
-    printf("Connection to %s: %s.c5g\n",STRING_IP_CNTRL, STRING_SYS_ID);
+    dprint("Try connection to" << STRING_IP_CNTRL << ": " << STRING_SYS_ID << ".c5g\n");
 
-    printf("\n[F] ORLOPEN_initialize_controller\n");
+    dprint("\n[F] ORLOPEN_initialize_controller\n");
     if( ORLOPEN_initialize_controller(STRING_IP_CNTRL, STRING_SYS_ID, ORL_SILENT, ORL_CNTRL01) )
     {
-        printf("error ORL_initialize_robot\n");
+        dprint("error ORL_initialize_robot\n");
         exit(0);
     }
     else
         printf("%s: %s.c5g OK\n", STRING_IP_CNTRL, STRING_SYS_ID);
+        dprint("The connection to" << STRING_IP_CNTRL << ": " << STRING_SYS_ID << ".c5g is OK!\n");
     
-    printf("\n[F] ORLOPEN_set_period\n");
+    dprint("\n[F] ORLOPEN_set_period\n");
     ORLOPEN_set_period(ORL_16_0_MILLIS, ORL_VERBOSE, ORL_CNTRL01);
     
-    printf("\n[F] ORLOPEN_SetCallBackFunction\n");
+    dprint("\n[F] ORLOPEN_SetCallBackFunction\n");
     ORLOPEN_SetCallBackFunction (&loop, ORL_SILENT, ORL_CNTRL01);
     
-    printf("\n[F] ORLOPEN_StartCommunication\n");
+    dprint("\n[F] ORLOPEN_StartCommunication\n");
     if (ORLOPEN_StartCommunication(ORL_SILENT))
     {
-        printf("\n[F] ORLOPEN_GetPowerlinkState\n");
+        dprint("\n[F] ORLOPEN_GetPowerlinkState\n");
         ORLOPEN_GetPowerlinkState(ORL_SILENT);
         exit(0);
     }
@@ -57,10 +58,10 @@ int  startCRCOpen (void)
 
 int stopCRCOpen ()
 {
-    printf("\n[F] ORLOPEN_StopCommunication\n");
+    dprint("\n[F] ORLOPEN_StopCommunication\n");
     ORLOPEN_StopCommunication(ORL_SILENT);
     
-    printf("\n[F] ORL_terminate_controller\n");
+    dprint("\n[F] ORL_terminate_controller\n");
     ORL_terminate_controller(ORL_SILENT,ORL_CNTRL01);
     return 0;
 }
