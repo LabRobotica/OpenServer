@@ -1,20 +1,13 @@
 #ifndef SERVERTCPIP_H
 #define SERVERTCPIP_H
 
-#include <iostream>
-#include <sys/types.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netdb.h>
 #include <arpa/inet.h>
-#include <string.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <netdb.h>
 #include <string>
 #include <cstring>
-#include "CRCOpen.h"
-
-
-
-using namespace std;
+#include <memory>
 
 int clientSocket;
 int listening;
@@ -144,33 +137,48 @@ int TCPIP_choose_mode() //Test mode
             {
                 auto a1 = angle;
                 std::string buffer;
-                buffer  = std::to_string( (int) (a1->value[0]*1000));
+                #define val 100000000
+                buffer  = std::to_string( (int) (a1->value[0]*val));
                 buffer += " ";
-                buffer += std::to_string( (int) (a1->value[1]*1000));
+                buffer += std::to_string( (int) (a1->value[1]*val));
                 buffer += " ";
-                buffer += std::to_string( (int) (a1->value[2]*1000));
+                buffer += std::to_string( (int) (a1->value[2]*val));
                 buffer += " ";
-                buffer += std::to_string( (int) (a1->value[3]*1000));
+                buffer += std::to_string( (int) (a1->value[3]*val));
                 buffer += " ";
-                buffer += std::to_string( (int) (a1->value[4]*1000));
+                buffer += std::to_string( (int) (a1->value[4]*val));
                 buffer += " ";
-                buffer += std::to_string( (int) (a1->value[5]*1000));
+                buffer += std::to_string( (int) (a1->value[5]*val));
 
                 for(int i=0; i<buffer.size(); i++)  buf[i] = buffer[i];
                 
-                send(clientSocket, buf, strlen(buf) + 1, 0);
+                send(clientSocket, buf,300/* strlen(buf) + 1*/, 0);
                 break;
             }
             case 'g': //Listen mode
             {
-                memset(buf, 0, 4096);
                 auto a1 = angle;
-                memset(buf, a1, a1.size());
-                
-                send(clientSocket, buf, strlen(buf) + 1, 0);
+                send(clientSocket, reinterpret_cast<char*>(a1.get()), 100/*sizeof(a1.get())*/, 0);                
                 break;
             }
-
+            case 'h': //Listen mode
+            {
+                double test=2.00;
+                memset(buf, 0, 4096);
+                mempcpy(buf, &test, 8);
+                send(clientSocket, buf, 8, 0);
+                //send(clientSocket, reinterpret_cast<char*>(test),20, 0);                
+                break;
+            }
+            case 'i': //Listen mode
+            {
+                auto a1 = angle;
+                memset(buf, 0, 4096);
+                mempcpy(buf, a1.get(),52 /*sizeof(a1.get())*/ );
+                send(clientSocket, buf, 52/*strlen(buf)*/, 0);
+                
+                break;
+            }
             case 'c': //Close conection
                 return 0;
 

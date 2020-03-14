@@ -1,7 +1,10 @@
-#include "functions.h"
-#include "serverTCPIP.h"
-#include "CRCOpen.h"
+using namespace std;
 
+#define debug                //Enables debug mode (Comment to disable)
+
+#include "functions.h"
+#include "CRCOpen.h"
+#include "serverTCPIP.h"
 
 int  main (int argc, char **argv)
 {

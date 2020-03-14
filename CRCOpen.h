@@ -1,12 +1,11 @@
 #ifndef CRCOPEN_H
 #define CRCOPEN_H
 
+#include <memory>
+
 #define STRING_IP_CNTRL        "192.168.29.2"
 #define STRING_SYS_ID          "CNTRLC5G_2213436"
 
-#include <stdlib.h>
-#include <memory>
-#include <stdio.h>
 extern "C"
 {
     #include "eORL.h"
