@@ -2,8 +2,11 @@
 
 This program allows you to process information outside the LPC, as it may lack processing power for certain applications, and send it to it to relay the CRC securely.
 
+## Pandemic Version
 
-## To install
+This version does not use the CRCOpen library to be able to be compiled outside the LPC, to work in home office.
+
+### To install
 
 First clone the repository on LPC:
 
