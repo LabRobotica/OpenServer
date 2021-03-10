@@ -105,7 +105,7 @@ int TCPIP_choose_mode() //Test mode
     while (true)
     {
         memset(buf, 0, 4096);
-
+        void init();
         dprint("Wait for client to send data");
 
         int bytesReceived = recv(clientSocket, buf, 4096, 0);
@@ -135,6 +135,12 @@ int TCPIP_choose_mode() //Test mode
 
             case 'l': //Listen mode
             {
+                angle->value[0]=10.2;
+                angle->value[1]=15.0;
+                angle->value[2]=13.501;
+                angle->value[3]=10.0;
+                angle->value[4]=10.0;
+                angle->value[5]=10.0;
                 auto a1 = angle;
                 std::string buffer;
                 #define val 100000000
@@ -151,7 +157,7 @@ int TCPIP_choose_mode() //Test mode
                 buffer += std::to_string( (int) (a1->value[5]*val));
 
                 for(int i=0; i<buffer.size(); i++)  buf[i] = buffer[i];
-                
+                cout << buf << endl;
                 send(clientSocket, buf,300/* strlen(buf) + 1*/, 0);
                 break;
             }

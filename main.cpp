@@ -9,7 +9,7 @@ using namespace std;
 int  main (int argc, char **argv)
 {
   OPENSERVER_presentation(); //Print the presentation on the screen
-  startCRCOpen();            //Start communicating with the CRC
+  //startCRCOpen();            //Start communicating with the CRC
   TCPIP_open_connect();      //Open the connection TCP/IP
 
   while (true)
@@ -23,7 +23,7 @@ int  main (int argc, char **argv)
   }
 
   close(listening);          //End the TCP/IP connection
-  stopCRCOpen();             //End the CRC connection
+  //stopCRCOpen();             //End the CRC connection
 
   return 0;                  //Return that was successful
 }

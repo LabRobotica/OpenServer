@@ -14,6 +14,7 @@ extern "C"
 auto angle = std::shared_ptr <ORL_joint_value>        (new ORL_joint_value);
 auto posi  = std::shared_ptr <ORL_cartesian_position> (new ORL_cartesian_position);
 
+/*
 int loop (int a)
 {
     auto sx_joint_pos = std::shared_ptr <ORL_joint_value>        (new ORL_joint_value);
@@ -64,5 +65,5 @@ int stopCRCOpen ()
     ORL_terminate_controller(ORL_SILENT,ORL_CNTRL01);
     return 0;
 }
-
+*/
 #endif
