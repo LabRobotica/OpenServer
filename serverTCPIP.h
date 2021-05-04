@@ -125,6 +125,7 @@ int TCPIP_choose_mode() //Test mode
 
         dprint("CLIENT> " << string(buf, 0, bytesReceived));
         
+        /*
         /////////TEMPORARIO/////////////
         angleListen->value[0]=10.2;
         angleListen->value[1]=15.0;
@@ -133,6 +134,7 @@ int TCPIP_choose_mode() //Test mode
         angleListen->value[4]=10.0;
         angleListen->value[5]=10.0;
         /////////TEMPORARIO/////////////
+        */
 
         switch (buf[0])
         {
@@ -211,8 +213,8 @@ int TCPIP_choose_mode() //Test mode
                 buffer += " ";
                 buffer += std::to_string( (int) (a1->value[5]*val));
                 for(int i=0; i<buffer.size()+1; i++)  buf[i] = buffer[i];
-                cout << "AQUI" << buf << endl;
-                send(clientSocket, buf,300/* strlen(buf) + 1*/, 0);
+                cout << "AQUI " << buf << endl;
+                send(clientSocket, buf,buffer.size()+1/* strlen(buf) + 1*/, 0);
 
                 //Depois pegar os angulos que foram salvos anteriormente e colocar no ponteiro inteligente
                 auto sx_joint_pos = std::shared_ptr <ORL_joint_value>        (new ORL_joint_value);
@@ -220,18 +222,29 @@ int TCPIP_choose_mode() //Test mode
                 for(int k=2;k<bytesReceived;k++) resposta[k-2]=buf[k];
                 std::string::size_type sz;
                 char * pedaco;//string pedaco;
-                pedaco = strtok (resposta," ");
-                sx_joint_pos->value[0] = ((double)std::stoi(pedaco,&sz))/val;
-                pedaco = strtok (NULL, " ");
-                sx_joint_pos->value[1] = ((double)std::stoi(pedaco,&sz))/val;
-                pedaco = strtok (NULL, " ");
-                sx_joint_pos->value[2] = ((double)std::stoi(pedaco,&sz))/val;
-                pedaco = strtok (NULL, " ");
-                sx_joint_pos->value[3] = ((double)std::stoi(pedaco,&sz))/val;
-                pedaco = strtok (NULL, " ");
-                sx_joint_pos->value[4] = ((double)std::stoi(pedaco,&sz))/val;
-                pedaco = strtok (NULL, " ");
-                sx_joint_pos->value[5] = ((double)std::stoi(pedaco,&sz))/val;
+                
+                try
+                {
+                    pedaco = strtok (resposta," ");
+                    sx_joint_pos->value[0] = ((double)std::stoi(pedaco,&sz))/val;
+                    pedaco = strtok (NULL, " ");
+                    sx_joint_pos->value[1] = ((double)std::stoi(pedaco,&sz))/val;
+                    pedaco = strtok (NULL, " ");
+                    sx_joint_pos->value[2] = ((double)std::stoi(pedaco,&sz))/val;
+                    pedaco = strtok (NULL, " ");
+                    sx_joint_pos->value[3] = ((double)std::stoi(pedaco,&sz))/val;
+                    pedaco = strtok (NULL, " ");
+                    sx_joint_pos->value[4] = ((double)std::stoi(pedaco,&sz))/val;
+                    pedaco = strtok (NULL, " ");
+                    sx_joint_pos->value[5] = ((double)std::stoi(pedaco,&sz))/val;
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << e.what() << '\n';
+                    cout << resposta << endl;
+                }
+                
+                
                 angleWriten = sx_joint_pos;
                 break;
             }
