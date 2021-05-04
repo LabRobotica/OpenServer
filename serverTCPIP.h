@@ -12,6 +12,8 @@
 int clientSocket;
 int listening;
 
+#define val 100000
+
 int TCPIP_open_connect() 
 {
     dprint("----------------------------");
@@ -123,6 +125,15 @@ int TCPIP_choose_mode() //Test mode
 
         dprint("CLIENT> " << string(buf, 0, bytesReceived));
         
+        /////////TEMPORARIO/////////////
+        angleListen->value[0]=10.2;
+        angleListen->value[1]=15.0;
+        angleListen->value[2]=13.501;
+        angleListen->value[3]=10.0;
+        angleListen->value[4]=10.0;
+        angleListen->value[5]=10.0;
+        /////////TEMPORARIO/////////////
+
         switch (buf[0])
         {
             case 't': //teste mode
@@ -130,20 +141,15 @@ int TCPIP_choose_mode() //Test mode
                 break;
             
             case 'm': //mirror mode
+                dprint("Mirror MODE");
                 send(clientSocket, buf, bytesReceived + 1, 0);
                 break;
 
             case 'l': //Listen mode
             {
-                angle->value[0]=10.2;
-                angle->value[1]=15.0;
-                angle->value[2]=13.501;
-                angle->value[3]=10.0;
-                angle->value[4]=10.0;
-                angle->value[5]=10.0;
-                auto a1 = angle;
+                auto a1 = angleListen;
                 std::string buffer;
-                #define val 100000000
+                #define val 100000
                 buffer  = std::to_string( (int) (a1->value[0]*val));
                 buffer += " ";
                 buffer += std::to_string( (int) (a1->value[1]*val));
@@ -163,7 +169,7 @@ int TCPIP_choose_mode() //Test mode
             }
             case 'g': //Listen mode
             {
-                auto a1 = angle;
+                auto a1 = angleListen;
                 send(clientSocket, reinterpret_cast<char*>(a1.get()), 100/*sizeof(a1.get())*/, 0);                
                 break;
             }
@@ -178,7 +184,7 @@ int TCPIP_choose_mode() //Test mode
             }
             case 'i': //Listen mode
             {
-                auto a1 = angle;
+                auto a1 = angleListen;
                 memset(buf, 0, 4096);
                 mempcpy(buf, a1.get(),52 /*sizeof(a1.get())*/ );
                 send(clientSocket, buf, 52/*strlen(buf)*/, 0);
@@ -188,7 +194,49 @@ int TCPIP_choose_mode() //Test mode
             case 'c': //Close conection
                 return 0;
 
-            default: //error mode
+            case 'p': //Pos Absolute Axis
+            {
+                //Primeiramente pegar os angulos no ponteiro inteligente e os enviar para a rede
+                auto a1 = angleListen;
+                std::string buffer;
+                buffer  = std::to_string( (int) (a1->value[0]*val));
+                buffer += " ";
+                buffer += std::to_string( (int) (a1->value[1]*val));
+                buffer += " ";
+                buffer += std::to_string( (int) (a1->value[2]*val));
+                buffer += " ";
+                buffer += std::to_string( (int) (a1->value[3]*val));
+                buffer += " ";
+                buffer += std::to_string( (int) (a1->value[4]*val));
+                buffer += " ";
+                buffer += std::to_string( (int) (a1->value[5]*val));
+                for(int i=0; i<buffer.size()+1; i++)  buf[i] = buffer[i];
+                cout << "AQUI" << buf << endl;
+                send(clientSocket, buf,300/* strlen(buf) + 1*/, 0);
+
+                //Depois pegar os angulos que foram salvos anteriormente e colocar no ponteiro inteligente
+                auto sx_joint_pos = std::shared_ptr <ORL_joint_value>        (new ORL_joint_value);
+                char resposta[] = "15500000 15500000 15500000 15500000 15500000                 ";
+                for(int k=2;k<bytesReceived;k++) resposta[k-2]=buf[k];
+                std::string::size_type sz;
+                char * pedaco;//string pedaco;
+                pedaco = strtok (resposta," ");
+                sx_joint_pos->value[0] = ((double)std::stoi(pedaco,&sz))/val;
+                pedaco = strtok (NULL, " ");
+                sx_joint_pos->value[1] = ((double)std::stoi(pedaco,&sz))/val;
+                pedaco = strtok (NULL, " ");
+                sx_joint_pos->value[2] = ((double)std::stoi(pedaco,&sz))/val;
+                pedaco = strtok (NULL, " ");
+                sx_joint_pos->value[3] = ((double)std::stoi(pedaco,&sz))/val;
+                pedaco = strtok (NULL, " ");
+                sx_joint_pos->value[4] = ((double)std::stoi(pedaco,&sz))/val;
+                pedaco = strtok (NULL, " ");
+                sx_joint_pos->value[5] = ((double)std::stoi(pedaco,&sz))/val;
+                angleWriten = sx_joint_pos;
+                break;
+            }
+
+            default: //Mirror mode
                 send(clientSocket, buf, bytesReceived + 1, 0);
                 break;
         }

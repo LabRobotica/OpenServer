@@ -6,24 +6,27 @@
 #define STRING_IP_CNTRL        "192.168.29.2"
 #define STRING_SYS_ID          "CNTRLC5G_2213436"
 
-extern "C"
-{
-    #include "eORL.h"
-}
+#include "eORL.h"
 
-auto angle = std::shared_ptr <ORL_joint_value>        (new ORL_joint_value);
-auto posi  = std::shared_ptr <ORL_cartesian_position> (new ORL_cartesian_position);
+auto angleListen = std::shared_ptr <ORL_joint_value>        (new ORL_joint_value);
+auto posiListen  = std::shared_ptr <ORL_cartesian_position> (new ORL_cartesian_position);
 
+auto angleWriten = std::shared_ptr <ORL_joint_value>        (new ORL_joint_value);
+auto posiWriten  = std::shared_ptr <ORL_cartesian_position> (new ORL_cartesian_position);
 /*
 int loop (int a)
 {
-    auto sx_joint_pos = std::shared_ptr <ORL_joint_value>        (new ORL_joint_value);
-    auto sx_cart_pos  = std::shared_ptr <ORL_cartesian_position> (new ORL_cartesian_position);
+    auto get_joint_pos = std::shared_ptr <ORL_joint_value>        (new ORL_joint_value);
+    auto get_cart_pos  = std::shared_ptr <ORL_cartesian_position> (new ORL_cartesian_position);
 
-    ORLOPEN_get_pos_measured (sx_joint_pos.get(), sx_cart_pos.get(), 0, ORL_SILENT, ORL_CNTRL01, 0);
+    auto set_joint_pos = angleWriten;
+    auto set_cart_pos  = posiWriten;
 
-    angle = sx_joint_pos;
-    posi  = sx_cart_pos;
+    ORLOPEN_get_pos_measured (get_joint_pos.get(), get_cart_pos.get(), 0, ORL_SILENT, ORL_CNTRL01, 0);
+    ORLOPEN_set_absolute_pos_target_degree(set_joint_pos.get(), ORL_SILENT, ORL_CNTRL01, 0);
+    
+    angleListen = get_joint_pos;
+    posiListen  = get_cart_pos;
 }
 
 int  startCRCOpen (void)
