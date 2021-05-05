@@ -125,7 +125,7 @@ int TCPIP_choose_mode() //Test mode
 
         dprint("CLIENT> " << string(buf, 0, bytesReceived));
         
-        /*
+        
         /////////TEMPORARIO/////////////
         angleListen->value[0]=10.2;
         angleListen->value[1]=15.0;
@@ -134,7 +134,7 @@ int TCPIP_choose_mode() //Test mode
         angleListen->value[4]=10.0;
         angleListen->value[5]=10.0;
         /////////TEMPORARIO/////////////
-        */
+        
 
         switch (buf[0])
         {
@@ -151,7 +151,6 @@ int TCPIP_choose_mode() //Test mode
             {
                 auto a1 = angleListen;
                 std::string buffer;
-                #define val 100000
                 buffer  = std::to_string( (int) (a1->value[0]*val));
                 buffer += " ";
                 buffer += std::to_string( (int) (a1->value[1]*val));
@@ -164,9 +163,9 @@ int TCPIP_choose_mode() //Test mode
                 buffer += " ";
                 buffer += std::to_string( (int) (a1->value[5]*val));
 
-                for(int i=0; i<buffer.size(); i++)  buf[i] = buffer[i];
+                for(int i=0; i<buffer.size()+1; i++)  buf[i] = buffer[i];
                 cout << buf << endl;
-                send(clientSocket, buf,300/* strlen(buf) + 1*/, 0);
+                send(clientSocket, buf,buffer.size()+1/* strlen(buf) + 1*/, 0);
                 break;
             }
             case 'g': //Listen mode
@@ -244,10 +243,15 @@ int TCPIP_choose_mode() //Test mode
                     cout << resposta << endl;
                 }
                 
-                
                 angleWriten = sx_joint_pos;
                 break;
             }
+            case 'w':
+                writen=0;
+                break;
+            case 'W':
+                writen=1;
+                break;
 
             default: //Mirror mode
                 send(clientSocket, buf, bytesReceived + 1, 0);
