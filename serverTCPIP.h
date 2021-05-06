@@ -125,7 +125,7 @@ int TCPIP_choose_mode() //Test mode
 
         dprint("CLIENT> " << string(buf, 0, bytesReceived));
         
-        
+        /*
         /////////TEMPORARIO/////////////
         angleListen->value[0]=10.2;
         angleListen->value[1]=15.0;
@@ -134,7 +134,7 @@ int TCPIP_choose_mode() //Test mode
         angleListen->value[4]=10.0;
         angleListen->value[5]=10.0;
         /////////TEMPORARIO/////////////
-        
+        */
 
         switch (buf[0])
         {
